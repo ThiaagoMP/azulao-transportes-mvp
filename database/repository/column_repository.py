@@ -25,7 +25,9 @@ def get_table_columns():
                 columns[table_name].append({
                     'table_name': table_name,
                     'column_name': column_name,
+                    'column_type': column_type,
                     'comment': comment
                 })
+    #Descrição;;obrigatorio;;front-ignore;;editavel;;visivel;;table-only;;dropdown?;;[dropdown_values separado por ,]
 
     return columns
