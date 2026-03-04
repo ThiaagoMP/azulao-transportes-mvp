@@ -2,7 +2,7 @@ import psycopg2 as ps
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(override=True)
 
 def connection_factory():
     return ps.connect(database = os.getenv("DATABASE"),

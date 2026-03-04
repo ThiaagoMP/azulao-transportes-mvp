@@ -14,6 +14,6 @@ def get_tables():
                            ORDER BY c.relname;
                            """)
             for f in cursor.fetchall():
-                tables_name[f.get('tabela')] = f.get('comentario')
+                tables_name[f[0]] = f[1]
 
     return tables_name
