@@ -14,7 +14,7 @@ COMMENT ON TABLE "vehicle_maintenance" IS '#Manutenção do veículo;;true;;7;;'
 COMMENT ON TABLE "vehicle_refueling" IS '#Abastecimento do veículo;;true;;8;;';
 COMMENT ON TABLE "phone" IS '#Telefone;;true;;9;;';
 COMMENT ON TABLE "address" IS '#Endereço;;true;;10;;';
-COMMENT ON TABLE "user" IS '#Usuário;;false;;0;;';
+COMMENT ON TABLE "users" IS '#Usuário;;false;;0;;';
 COMMENT ON TABLE "fuel_type" IS '#Tipo de combustível;;false;;0;;';
 COMMENT ON TABLE "color" IS '#Cor;;false;;0;;';
 COMMENT ON TABLE "state" IS '#Estado;;false;;0;;';
@@ -31,19 +31,19 @@ COMMENT ON TABLE "user_phone" IS '#Relacionamento entre usuário e telefone;;fal
 -- =========================
 
 -- #Descrição*;;obrigatorio*;;front-ignore*;;editavel*;;visivel*;;table-only*;;dropdown*;;[dropdown_values separado por ,]*;;dropdown-table;;dropdown_id_column;;dropdown_name_column
--- 
+--
 
 -- =========================
 -- TABELA: user
 -- =========================
-COMMENT ON COLUMN "user".id_user IS '#ID único;;false;;true;;false;;false;;false;;false;;[]';
-COMMENT ON COLUMN "user".email IS '#E-mail;;true;;false;;true;;true;;false;;false;;[]';
-COMMENT ON COLUMN "user".password IS '#Senha criptografada;;true;;true;;false;;false;;false;;false;;[]';
-COMMENT ON COLUMN "user".name IS '#Nome completo;;true;;false;;true;;true;;false;;false;;[]';
-COMMENT ON COLUMN "user".last_access IS '#Último acesso;;false;;true;;false;;true;;true;;false;;[]';
-COMMENT ON COLUMN "user".created_at IS '#Criação;;false;;true;;false;;false;;false;;false;;[]';
-COMMENT ON COLUMN "user".updated_at IS '#Atualização;;false;;true;;false;;false;;false;;false;;[]';
-COMMENT ON COLUMN "user".deleted_at IS '#Exclusão lógica;;false;;true;;false;;false;;false;;false;;[]';
+COMMENT ON COLUMN "users".id_user IS '#ID único;;false;;true;;false;;false;;false;;false;;[]';
+COMMENT ON COLUMN "users".email IS '#E-mail;;true;;false;;true;;true;;false;;false;;[]';
+COMMENT ON COLUMN "users".password IS '#Senha criptografada;;true;;true;;false;;false;;false;;false;;[]';
+COMMENT ON COLUMN "users".name IS '#Nome completo;;true;;false;;true;;true;;false;;false;;[]';
+COMMENT ON COLUMN "users".last_access IS '#Último acesso;;false;;true;;false;;true;;true;;false;;[]';
+COMMENT ON COLUMN "users".created_at IS '#Criação;;false;;true;;false;;false;;false;;false;;[]';
+COMMENT ON COLUMN "users".updated_at IS '#Atualização;;false;;true;;false;;false;;false;;false;;[]';
+COMMENT ON COLUMN "users".deleted_at IS '#Exclusão lógica;;false;;true;;false;;false;;false;;false;;[]';
 
 -- =========================
 -- TABELA: fuel_type

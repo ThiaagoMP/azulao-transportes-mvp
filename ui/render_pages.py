@@ -48,10 +48,8 @@ def make_page(screen):
                 table_row[col_name] = row.get(f.column_name)
             table_data.append(table_row)
 
-    # Limpar possíveis restos de '# ' nos comentários do banco para ter nomes limpos
     clean_columns = [str(col).replace('#', '').strip() for col in table_columns]
     
-    # É preciso recriar os dicionários de dados com as chaves limpas
     clean_table_data = []
     for row in table_data:
         clean_row = {str(k).replace('#', '').strip(): v for k, v in row.items()}
@@ -59,7 +57,6 @@ def make_page(screen):
         
     df = pd.DataFrame(clean_table_data, columns=clean_columns)
     
-    # ---- INSERIR NOVO REGISTRO ----
     cols_header = st.columns([8, 2])
     with cols_header[0]:
         st.markdown("### 📋 Dados Cadastrados")
@@ -67,7 +64,6 @@ def make_page(screen):
         if st.button("➕ Novo Registro", use_container_width=True, type="primary"):
             insert_dialog(screen.table_name, screen_fields)
     
-    # 1. Configurando Colunas com a API nativa do Streamlit
     column_config = {}
     for col in clean_columns:
         column_config[col] = st.column_config.Column(
@@ -76,7 +72,6 @@ def make_page(screen):
             help=f"Dados referentes à coluna {col}"
         )
         
-    # 2. Utilizando recursos reais do Pandas Styler que são interpretados pelo Streamlit
     def cor_fundo_zebrado(row):
         if row.name % 2 == 0:
             return ['background-color: rgba(30, 58, 138, 0.05)' for _ in row]
@@ -84,7 +79,6 @@ def make_page(screen):
 
     styled_df = df.style.apply(cor_fundo_zebrado, axis=1)
         
-    # 3. Renderizando Dataframe
     st.dataframe(
         styled_df,
         width="stretch",
@@ -100,8 +94,6 @@ def make_page(screen):
     st.divider()
     st.subheader("Editar Registros")
     
-    # Pega o nome da coluna primária. Assume-se que seja a que começa com 'id_' na maioria do arquivo .sql.
-    # Ex: 'id_user', 'id_driver'
     id_col_candidates = [f.column_name for f in screen_fields if f.column_name.startswith('id_')]
     primary_key_col = id_col_candidates[0] if id_col_candidates else 'id'
 
@@ -111,7 +103,6 @@ def make_page(screen):
             cols = st.columns(2)
             col_idx = 0
             
-            # Dicionário de estado temporário para a edição
             edit_data = {}
             
             for field in screen_fields:
@@ -124,7 +115,6 @@ def make_page(screen):
                 
                 widget_key = f"{screen.table_name}_{row_id_val}_{field.column_name}"
                 if is_pk:
-                    # PK oculta, ou mostrada apenas como texto se quisermos. Não deve ser editável.
                     edit_data[field.column_name] = value
                     continue
 
@@ -133,7 +123,6 @@ def make_page(screen):
                 
                 col_idx += 1
             
-            # --- AÇÕES DA LINHA ---
             act_cols = st.columns([7, 1.5, 1.5])
             with act_cols[1]:
                 if st.button("Salvar 💾", key=f"btn_save_{screen.table_name}_{row_id_val}", use_container_width=True):
@@ -165,7 +154,6 @@ def make_page(screen):
     return
 
 def render_widget(field, value, widget_key):
-    """Renderiza o widget correto baseado no tipo de dados."""
     label = field.description if field.description else field.column_name
     disabled = not field.is_editable
     col_type = field.column_type.lower() if field.column_type else "text"
@@ -185,14 +173,11 @@ def render_widget(field, value, widget_key):
             disabled=disabled,
         )
     
-    # Tratamento de Booleanos
     if 'boolean' in col_type:
         val_bool = bool(value) if value is not None else False
         return st.checkbox(label=label, value=val_bool, key=widget_key, disabled=disabled)
         
-    # Tratamento de Datas
     elif 'date' in col_type or 'timestamp' in col_type:
-        # Se veio como string, converte, se não, usa direto. Se nulo, "hoje"
         import datetime
         val_date = value if isinstance(value, (datetime.date, datetime.datetime)) else None
         if isinstance(value, str) and value:
@@ -202,7 +187,6 @@ def render_widget(field, value, widget_key):
             except ValueError:
                 val_date = None
         
-        # Limita a data 100 anos para trás e 100 anos para frente
         today = datetime.date.today()
         min_date = today.replace(year=today.year - 100)
         max_date = today.replace(year=today.year + 100)
@@ -216,7 +200,6 @@ def render_widget(field, value, widget_key):
             disabled=disabled
         )
         
-    # Tratamento Numérico (Inteiros)
     elif 'int' in col_type: # integer, bigint, smallint
         val_int = int(value) if value is not None else 0
         return st.number_input(
@@ -227,7 +210,6 @@ def render_widget(field, value, widget_key):
             disabled=disabled
         )
         
-    # Tratamento Numérico (Decimais)
     elif 'numeric' in col_type or 'double' in col_type or 'real' in col_type:
         val_float = float(value) if value is not None else 0.0
         return st.number_input(
@@ -239,7 +221,6 @@ def render_widget(field, value, widget_key):
             disabled=disabled
         )
         
-    # Tratamento Padrão de Textos
     else:
         return st.text_input(
             label=label,
@@ -262,12 +243,11 @@ def insert_dialog(table_name, screen_fields):
             
         widget_key = f"new_{table_name}_{field.column_name}"
         
-        # Passa value = None para inicializar vazio
         val = render_widget(field, None, widget_key)
         
-        # Só registra no dicionário se não for um valor vazio default indesejado, ou se for algo de fato
-        # Note que checkboxes retornarão False (válido)
-        if val is not None and val != "": 
+        if val is not None and val != "":
+            if field.column_type == 'boolean':
+                val = True if val == 'Sim' else False
             insert_data_dict[field.column_name] = val
                 
     if st.button("Gravar", type="primary"):
@@ -276,6 +256,7 @@ def insert_dialog(table_name, screen_fields):
             return
 
         try:
+            insert_data_dict['id_user'] = st.session_state.user_id
             ds.insert_data(table_name, insert_data_dict)
             st.success("Inserido com sucesso!")
             st.rerun()
